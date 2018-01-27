@@ -111,21 +111,9 @@
 #define CALLCLASS(className,member,args,access) ([_classID, member, args, access] call GETCLASS(className))
 #define SPAWNCLASS(className,member,args,access) ([_classID, member, args, access] spawn GETCLASS(className))
 
-#define VAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {NAMESPACE getVariable [GETVAR(varName), nil]}; NAMESPACE setVariable [GETVAR(varName), _this]}
-#define SVAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {NAMESPACE getVariable [GETSVAR(varName), nil]}; NAMESPACE setVariable [GETSVAR(varName), _this]}
-#define VAR_DELETE(varName) (NAMESPACE setVariable [GETVAR(varName), nil])
-
-#define M_VAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {missionNamespace getVariable [GETVAR(varName), nil]}; missionNamespace setVariable [GETVAR(varName), _this]}
-#define M_SVAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {missionNamespace getVariable [GETSVAR(varName), nil]}; missionNamespace setVariable [GETSVAR(varName), _this]}
-#define M_VAR_DELETE(varName) (missionNamespace setVariable [GETVAR(varName), nil])
-
-#define UI_VAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {uiNamespace getVariable [GETVAR(varName), nil]}; uiNamespace setVariable [GETVAR(varName), _this]}
-#define UI_SVAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {uiNamespace getVariable [GETSVAR(varName), nil]}; uiNamespace setVariable [GETSVAR(varName), _this]}
-#define UI_VAR_DELETE(varName) (uiNamespace setVariable [GETVAR(varName), nil])
-
-#define P_VAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {profileNamespace getVariable [GETVAR(varName), nil]}; profileNamespace setVariable [GETVAR(varName), _this]}
-#define P_SVAR_DFT_FUNC(varName) {if (isNil "_this") exitWith {profileNamespace getVariable [GETSVAR(varName), nil]}; profileNamespace setVariable [GETSVAR(varName), _this]}
-#define P_VAR_DELETE(varName) (profileNamespace setVariable [GETVAR(varName), nil])
+#define VAR_DFT_FUNC(varName,space) {if (isNil "_this") exitWith {space getVariable [GETVAR(varName), nil]}; space setVariable [GETVAR(varName), _this]}
+#define SVAR_DFT_FUNC(varName,space) {if (isNil "_this") exitWith {space getVariable [GETSVAR(varName), nil]}; space setVariable [GETSVAR(varName), _this]}
+#define VAR_DELETE(varName,space) (space setVariable [GETVAR(varName), nil])
 
 #define MOD_VAR(varName,mod) MEMBER(varName,MEMBER(varName,nil) mod)
 
@@ -243,8 +231,8 @@
     See Also:
         <FUNCTION>
 */
-#define VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName)
-#define STATIC_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName)
+#define VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,NAMESPACE)
+#define STATIC_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,NAMESPACE)
 
 /*
     Macro: DELETE_VARIABLE(varName)
@@ -257,7 +245,7 @@
     See Also:
         <VARIABLE>
 */
-#define DELETE_VARIABLE(varName) VAR_DELETE(varName)
+#define DELETE_VARIABLE(varName) VAR_DELETE(varName,NAMESPACE)
 
 /*
     Macros:
@@ -274,12 +262,12 @@
     See Also:
         <FUNCTION>
 */
-#define M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith M_VAR_DFT_FUNC(varName)
-#define STATIC_M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith M_SVAR_DFT_FUNC(varName)
+#define M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,missionNamespace)
+#define STATIC_M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,missionNamespace)
 
 /*
     Macro: DELETE_M_VARIABLE(varName)
-    Deletes (nils) a mission variable which has been defined using the <UI_VARIABLE> macro.
+    Deletes (nils) a mission variable which has been defined using the <M_VARIABLE> macro.
     This macro must be used inside a member function, and works regardless of the mission variable's protection.
 
     Parameters:
@@ -288,7 +276,7 @@
     See Also:
         <M_VARIABLE>
 */
-#define DELETE_M_VARIABLE(varName) M_VAR_DELETE(varName)
+#define DELETE_M_VARIABLE(varName) VAR_DELETE(varName,missionNamespace)
 
 /*
     Macros:
@@ -305,8 +293,8 @@
     See Also:
         <FUNCTION>
 */
-#define UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith UI_VAR_DFT_FUNC(varName)
-#define STATIC_UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith UI_SVAR_DFT_FUNC(varName)
+#define UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,uiNamespace)
+#define STATIC_UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,uiNamespace)
 
 /*
     Macro: DELETE_UI_VARIABLE(varName)
@@ -319,7 +307,7 @@
     See Also:
         <UI_VARIABLE>
 */
-#define DELETE_UI_VARIABLE(varName) UI_VAR_DELETE(varName)
+#define DELETE_UI_VARIABLE(varName) VAR_DELETE(varName,uiNamespace)
 
 /*
     Macros:
@@ -336,12 +324,12 @@
     See Also:
         <FUNCTION>
 */
-#define P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith P_VAR_DFT_FUNC(varName)
-#define STATIC_P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith P_SVAR_DFT_FUNC(varName)
+#define P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,profileNamespace)
+#define STATIC_P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,profileNamespace)
 
 /*
     Macro: DELETE_P_VARIABLE(varName)
-    Deletes (nils) a profile variable which has been defined using the <PF_VARIABLE> macro.
+    Deletes (nils) a profile variable which has been defined using the <P_VARIABLE> macro.
     This macro must be used inside a member function, and works regardless of the profile variable's protection.
 
     Parameters:
@@ -350,7 +338,7 @@
     See Also:
         <P_VARIABLE>
 */
-#define DELETE_P_VARIABLE(varName) P_VAR_DELETE(varName)
+#define DELETE_P_VARIABLE(varName) VAR_DELETE(varName,profileNamespace)
 
 /*
     Macro: MEMBER(memberStr,args)
