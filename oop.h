@@ -489,7 +489,7 @@
     Macro: SCRIPT_NAME
     Assign script name to function.
 */
-#define SCRIPT_NAME scriptName format ["%1: %2", _objClassID, _objMember]
+#define SCRIPT_NAME private _fnc_scriptName = format ["%1: %2", _objClassID, _objMember]; scriptName _fnc_scriptName
 
 /*
     Macro: IS_NIL(varName)
@@ -499,3 +499,23 @@
         varName - The name of the variable member [string].
 */
 #define IS_NIL(varName) isNil {MEMBER(varName,nil)}
+
+/*
+    Macro: LOG(msg)
+    Log message. Must have allowFunctionsLog = 1 in description.ext file to log
+    to rpt file.
+
+    Parameters:
+        msg - Log message [string].
+*/
+#define LOG(msg) (["[M: %1 | F: %2:%3 | T: %4 | TT: %5] %6", missionName, __FILE__, (__LINE__ + 1), time, diag_tickTime, msg] call bis_fnc_logFormat)
+
+/*
+    Macro: ERROR(msg)
+    Log error message and display it. Must have allowFunctionsLog = 1 in
+    description.ext file to log to rpt file.
+
+    Parameters:
+        msg - Log error message [string].
+*/
+#define ERROR(msg) (["[M: %1 | F: %2:%3 | T: %4 | TT: %5] %6", missionName, __FILE__, (__LINE__ + 1), time, diag_tickTime, msg] call bis_fnc_error)
