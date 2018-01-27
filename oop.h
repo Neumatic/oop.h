@@ -99,17 +99,17 @@
 #define ENSURE_INDEX(idx,dft) if ((count _this) <= idx) then {_this set [idx, dft]}
 #define CHECK_THIS if (isNil "_this") then {_this = []} else {if (!(_this isEqualType [])) then {_this = [_this]}}
 
-#define CHECK_ACCESS(lvl) if ((_access >= lvl) &&
-#define CHECK_TYPE(typeStr) ((_argType == typeStr) || {(typeStr == "ANY")})
-#define CHECK_NIL (_argType == "")
-#define CHECK_MEMBER(name) (_member == name)
+#define CHECK_ACCESS(lvl) if ((_objAccess >= lvl) &&
+#define CHECK_TYPE(typeStr) ((_objArgType == typeStr) || {(typeStr == "ANY")})
+#define CHECK_NIL (_objArgType == "")
+#define CHECK_MEMBER(name) (_objMember == name)
 #define CHECK_VAR(typeStr,varName) {CHECK_MEMBER(varName)} && {CHECK_TYPE(typeStr) || {CHECK_NIL}}
 
-#define GETVAR(var) (format ["%1_%2", _classID, var])
-#define GETSVAR(var) (format ["%1_%2", _class, var])
+#define GETVAR(var) (format ["%1_%2", _objClassID, var])
+#define GETSVAR(var) (format ["%1_%2", _objClass, var])
 #define GETCLASS(className) (NAMESPACE getVariable [className, {nil}])
-#define CALLCLASS(className,member,args,access) ([_classID, member, args, access] call GETCLASS(className))
-#define SPAWNCLASS(className,member,args,access) ([_classID, member, args, access] spawn GETCLASS(className))
+#define CALLCLASS(className,member,args,access) ([_objClassID, member, args, access] call GETCLASS(className))
+#define SPAWNCLASS(className,member,args,access) ([_objClassID, member, args, access] spawn GETCLASS(className))
 
 #define VAR_DFT_FUNC(varName,space) {if (isNil "_this") exitWith {space getVariable [GETVAR(varName), nil]}; space setVariable [GETVAR(varName), _this]}
 #define SVAR_DFT_FUNC(varName,space) {if (isNil "_this") exitWith {space getVariable [GETSVAR(varName), nil]}; space setVariable [GETSVAR(varName), _this]}
@@ -121,26 +121,26 @@
 
 #define INSTANTIATE_CLASS(className) \
     NAMESPACE setVariable [className, { \
-    private _classID = param [0, "", [""]]; \
-    if (_classID isEqualTo "") exitWith {nil}; \
-    if (_classID == "new") exitWith { \
+    private _objClassID = param [0, "", [""]]; \
+    if (_objClassID isEqualTo "") exitWith {nil}; \
+    if (_objClassID == "new") exitWith { \
         NAMESPACE setVariable [AUTO_INC_VAR(className), (GET_AUTO_INC(className) + 1)]; \
-        private _code = compile format ['["%1", (param [0, "", [""]]), (param [1, nil]), 0] call GETCLASS(className)', (format ["%1_%2", className, GET_AUTO_INC(className)])]; \
-        [CONSTRUCTOR_METHOD, (param [1, nil])] call _code; \
-        _code; \
+        private _objCode = compile format ['["%1", (param [0, "", [""]]), (param [1, nil]), 0] call GETCLASS(className)', (format ["%1_%2", className, GET_AUTO_INC(className)])]; \
+        [CONSTRUCTOR_METHOD, (param [1, nil])] call _objCode; \
+        _objCode; \
     }; \
-    if (_classID == "delete") exitWith { \
+    if (_objClassID == "delete") exitWith { \
         [DECONSTRUCTOR_METHOD, (param [2, nil])] call (param [1, {nil}, [{}]]); \
     }; \
-    if (_classID == "static") exitWith { \
+    if (_objClassID == "static") exitWith { \
         [className, (param [1, "", [""]]), (param [2, nil]), 0] call GETCLASS(className); \
     }; \
-    params ["", ["_member", "", [""]], ["_this", nil], ["_access", 0, [0]]]; \
-    if (_member isEqualTo "") exitWith {nil}; \
-    private _argType = if (isNil "_this") then {""} else {typeName _this}; \
-    private _class = className;
+    params ["", ["_objMember", "", [""]], ["_this", nil], ["_objAccess", 0, [0]]]; \
+    if (_objMember isEqualTo "") exitWith {nil}; \
+    private _objArgType = if (isNil "_this") then {""} else {typeName _this}; \
+    private _objClass = className; \
 
-#define FINALIZE_CLASS if (!isNil "_parentClass") exitWith {CALLCLASS(_parentClass,_member,_this,1)};}]
+#define FINALIZE_CLASS if (!isNil "_objParentClass") exitWith {CALLCLASS(_objParentClass,_objMember,_this,1)};}]
 
 //////////////////////////////////////////////////////////////
 //  Group: Interactive (API) Macros and Definitions
@@ -166,7 +166,7 @@
         className - The name of the class [string].
 
     See Also:
-        <CLASSEXTENDS>
+        <CLASS_EXTENDS>
 */
 #define CLASS(className) INSTANTIATE_CLASS(className)
 
@@ -185,7 +185,7 @@
         <CLASS>
 */
 #define CLASS_EXTENDS(childClassName,parentClassName) INSTANTIATE_CLASS(childClassName) \
-    private _parentClass = parentClassName;
+    private _objParentClass = parentClassName; \
 
 /*
     Defines:
@@ -352,7 +352,7 @@
         memberStr - The name of the member function or variable [string].
         args - The arguments to be passed to the member function or variable [any].
 */
-#define MEMBER(memberStr,args) CALLCLASS(_class,memberStr,args,2)
+#define MEMBER(memberStr,args) CALLCLASS(_objClass,memberStr,args,2)
 
 /*
     Macro: SPAWN_MEMBER(memberStr,args)
@@ -366,7 +366,7 @@
         memberStr - The name of the member function or variable [string].
         args - The arguments to be passed to the member function or variable [any].
 */
-#define SPAWN_MEMBER(memberStr,args) SPAWNCLASS(_class,memberStr,args,2)
+#define SPAWN_MEMBER(memberStr,args) SPAWNCLASS(_objClass,memberStr,args,2)
 
 /*
     Macro: FUNC_GETVAR(varName)
@@ -488,10 +488,10 @@
 #define CLEAR(varName) MEMBER(varName,nil) resize 0
 
 /*
-    Macro: SCRIPT_NAME(name)
+    Macro: SCRIPT_NAME
     Assign script name to function.
 */
-#define SCRIPT_NAME scriptName format ["%1: %2", _classID, _member]
+#define SCRIPT_NAME scriptName format ["%1: %2", _objClassID, _objMember]
 
 /*
     Macro: IS_NIL(varName)
