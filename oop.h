@@ -385,76 +385,76 @@
 #define ENDCLASS FINALIZE_CLASS
 
 /*
-    Macro: ADD(varName,value)
+    Macro: ADD_VAR(varName,value)
     Add a value to variable member.
 
     Parameters:
         varName - The name of the variable member [string].
         value - Value to add to variable member [any].
 */
-#define ADD(varName,value) MOD_VAR(varName,+ value)
+#define ADD_VAR(varName,value) MOD_VAR(varName,+ value)
 
 /*
-    Macro: SUB(varName,value)
+    Macro: SUB_VAR(varName,value)
     Subtract a value from variable member.
 
     Parameters:
         varName - The name of the variable member [string].
         value - Value to subtract from variable member [any].
 */
-#define SUB(varName,value) MOD_VAR(varName,- value)
+#define SUB_VAR(varName,value) MOD_VAR(varName,- value)
 
 /*
-    Macro: INC(varName)
+    Macro: INC_VAR(varName)
     Increase variable member scalar by 1.
 
     Parameters:
         varName - The name of the variable member [string].
 */
-#define INC(varName) ADD(varName,1)
+#define INC_VAR(varName) ADD_VAR(varName,1)
 
 /*
-    Macro: DEC(varName)
+    Macro: DEC_VAR(_VARvarName)
     Decrease variable member scalar by 1.
 
     Parameters:
         varName - The name of the variable member [string].
 */
-#define DEC(varName) SUB(varName,1)
+#define DEC_VAR(varName) SUB_VAR(varName,1)
 
 /*
-    Macro: PUSH(varName,element)
+    Macro: PUSH_ARR(varName,element)
     Push element to back of variable member array. Returns element index.
 
     Parameters:
         varName - The name of the variable member array [string].
         element - Element to push to back of variable member array [any].
 */
-#define PUSH(varName,element) MEMBER(varName,nil) pushBack element
+#define PUSH_ARR(varName,element) MEMBER(varName,nil) pushBack element
 
 /*
-    Macro: REMOVE(varName,element)
+    Macro: REMOVE_ARR(varName,element)
     Find, remove and return element from variable member array.
 
     Parameters:
         varName - The name of the variable member array [string].
         element - Element to find and remove from variable member array [any].
 */
-#define REMOVE(varName,element) (MEMBER(varName,nil) deleteAt (MEMBER(varName,nil) find element))
-//#define REMOVE(varName,element) (MEMBER(varName,nil) call {_this deleteAt (_this find element)})
+#define REMOVE_ARR(varName,element) (MEMBER(varName,nil) deleteAt (MEMBER(varName,nil) find element))
+//#define REMOVE_ARR(varName,element) (MEMBER(varName,nil) call {_this deleteAt (_this find element)})
 
 /*
-    Macro: DELETE(varName,element)
+    Macro: DELETE_ARR(varName,element)
     Delete element(s) from variable member array.
 
     Parameters:
         varName - The name of the variable member array [string].
         element - Element to delete from variable member array [any].
 */
-#define DELETE(varName,element) MOD_VAR(varName,- [element])
+#define DELETE_ARR(varName,element) MOD_VAR(varName,- [element])
 
 /*
-    Macro: SET(varName,idx,value)
+    Macro: SET_ARR(varName,idx,value)
     Set index in variable member array.
 
     Parameters:
@@ -462,10 +462,10 @@
         index - Index to set in variable member array [scalar].
         value - Value to set in variable member array [any].
 */
-#define SET(varName,index,value) MEMBER(varName,nil) set [index, value]
+#define SET_ARR(varName,index,value) MEMBER(varName,nil) set [index, value]
 
 /*
-    Macro: GET(varName,index,default)
+    Macro: GET_ARR(varName,index,default)
     Get index element from variable member array. Returns default value if no
     element at index.
 
@@ -474,16 +474,16 @@
         index - Index to set in variable member array [scalar].
         default - Default value to return if no index [any].
 */
-#define GET(varName,index,default) MEMBER(varName,nil) param [index, default]
+#define GET_ARR(varName,index,default) MEMBER(varName,nil) param [index, default]
 
 /*
-    Macro: CLEAR(varName)
+    Macro: CLEAR_ARR(varName)
     Clear variable member array of all elements.
 
     Parameters:
         varName - The name of the variable member array [string].
 */
-#define CLEAR(varName) MEMBER(varName,nil) resize 0
+#define CLEAR_ARR(varName) MEMBER(varName,nil) resize 0
 
 /*
     Macro: SCRIPT_NAME
