@@ -35,8 +35,7 @@
         PRIVATE VARIABLE("object","currentUnit");
         PUBLIC FUNCTION("object","constructor") {
             MEMBER("currentUnit",_this);
-            private ["_unitCount"];
-            _unitCount = MEMBER("unitCount",nil);
+            private _unitCount = MEMBER("unitCount",nil);
             if (isNil "_unitCount") then {_unitCount = 0};
             _unitCount = _unitCount + 1;
             MEMBER("unitCount",_unitCount);
@@ -47,8 +46,7 @@
         };
         PUBLIC FUNCTION("string","deconstructor") {
             DELETE_VARIABLE("currentUnit");
-            private ["_unitCount"];
-            _unitCount = MEMBER("unitCount",nil);
+            private _unitCount = MEMBER("unitCount",nil);
             _unitCount = _unitCount - 1;
             MEMBER("unitCount",_unitCount);
             hint _this;
@@ -61,8 +59,8 @@
 
     (start code)
 
-    _playerInfo = ["new", player1] call PlayerInfo;
-    _currentUnit = "getUnit" call _playerInfo;
+    private _playerInfo = ["new", player1] call PlayerInfo;
+    private _currentUnit = "getUnit" call _playerInfo;
     ["setUnit", player2] call _playerInfo;
     ["delete", _playerInfo, "Player Removed!"] call PlayerInfo;
     _playerInfo = nil;
@@ -94,7 +92,7 @@
 //  Group: Internal Macros
 //////////////////////////////////////////////////////////////
 
-#define SAFE_VAR(var) (if (isNil {var}) then {nil} else {var})
+#define SAFE_VAR(var) ([var] param [0, nil])
 
 #define ENSURE_INDEX(idx,dft) if ((count _this) <= idx) then {_this set [idx, dft]}
 #define CHECK_THIS if (isNil "_this") then {_this = []} else {if (!(_this isEqualType [])) then {_this = [_this]}}
@@ -137,7 +135,7 @@
     }; \
     params ["", ["_objMember", "", [""]], ["_this", nil], ["_objAccess", 0, [0]]]; \
     if (_objMember isEqualTo "") exitWith {nil}; \
-    private _objArgType = if (isNil "_this") then {""} else {typeName _this}; \
+    private _objArgType = [typeName _this, ""] select isNil "_this"; \
     private _objClass = className; \
 
 #define FINALIZE_CLASS if (!isNil "_objParentClass") exitWith {CALLCLASS(_objParentClass,_objMember,_this,1)};}]
