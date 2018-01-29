@@ -98,10 +98,10 @@
 #define CHECK_THIS if (isNil "_this") then {_this = []} else {if (!(_this isEqualType [])) then {_this = [_this]}}
 
 #define CHECK_ACCESS(lvl) if ((_objAccess >= lvl) &&
-#define CHECK_TYPE(typeStr) ((_objArgType == typeStr) || {(typeStr == "ANY")})
-#define CHECK_NIL (_objArgType == "")
+#define CHECK_TYPE(argType) ([_this] isEqualTypeParams [argType])
+#define CHECK_NIL (isNil "_this")
 #define CHECK_MEMBER(name) (_objMember == name)
-#define CHECK_VAR(typeStr,varName) {CHECK_MEMBER(varName)} && {CHECK_TYPE(typeStr) || {CHECK_NIL}}
+#define CHECK_VAR(argType,varName) {CHECK_MEMBER(varName)} && {CHECK_TYPE(argType) || {CHECK_NIL}}
 
 #define GETVAR(var) (format ["%1_%2", _objClassID, var])
 #define GETSVAR(var) (format ["%1_%2", _objClass, var])
@@ -135,7 +135,6 @@
     }; \
     params ["", ["_objMember", "", [""]], ["_this", nil], ["_objAccess", 0, [0]]]; \
     if (_objMember isEqualTo "") exitWith {nil}; \
-    private _objArgType = [typeName _this, ""] select isNil "_this"; \
     private _objClass = className; \
 
 #define FINALIZE_CLASS if (!isNil "_objParentClass") exitWith {CALLCLASS(_objParentClass,_objMember,_this,1)};}]
@@ -202,35 +201,37 @@
 #define PUBLIC CHECK_ACCESS(0)
 
 /*
-    Macro: FUNCTION(typeStr,fncName)
+    Macro: FUNCTION(argType,fncName)
     Initializes a new function member of a class.
+    Nil for nil argument or any type.
 
     Parameters:
-        typeStr - The typeName of the argument. Reference <http://community.bistudio.com/wiki/typeName> [string].
+        argType - The type of the argument expected. [any].
         fncName - The name of the function member [string].
 
     See Also:
         <VARIABLE>
 */
-#define FUNCTION(typeStr,fncName) {CHECK_MEMBER(fncName)} && {CHECK_TYPE(typeStr)}) exitWith
+#define FUNCTION(argType,fncName) {CHECK_MEMBER(fncName)} && {CHECK_TYPE(argType)}) exitWith
 
 /*
     Macros:
-        VARIABLE(typeStr,varName)
-        STATIC_VARIABLE(typeStr,varName)
+        VARIABLE(argType,varName)
+        STATIC_VARIABLE(argType,varName)
 
     Description:
         Initializes a new variable member of a class. Static variables do not change between classes.
+        Nil for nil or any argument type.
 
     Parameters:
-        typeStr - The typeName of the argument. Reference <http://community.bistudio.com/wiki/typeName> [string].
+        argType - The type of the argument expected. [any].
         varName - The name of the variable member [string].
 
     See Also:
         <FUNCTION>
 */
-#define VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,NAMESPACE)
-#define STATIC_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,NAMESPACE)
+#define VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith VAR_DFT_FUNC(varName,NAMESPACE)
+#define STATIC_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith SVAR_DFT_FUNC(varName,NAMESPACE)
 
 /*
     Macro: DELETE_VARIABLE(varName)
@@ -247,21 +248,22 @@
 
 /*
     Macros:
-        M_VARIABLE(typeStr,varName)
-        M_STATIC_VARIABLE(typeStr,varName)
+        M_VARIABLE(argType,varName)
+        M_STATIC_VARIABLE(argType,varName)
 
     Description:
         Initializes a new mission variable member of a class. Static mission variables do not change between classes.
+        Nil for nil argument or any type.
 
     Parameters:
-        typeStr - The typeName of the argument. Reference <http://community.bistudio.com/wiki/typeName> [string].
+        argType - The typeName of the argument expected. [any].
         varName - The name of the mission variable member [string].
 
     See Also:
         <FUNCTION>
 */
-#define M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,missionNamespace)
-#define STATIC_M_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,missionNamespace)
+#define M_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith VAR_DFT_FUNC(varName,missionNamespace)
+#define STATIC_M_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith SVAR_DFT_FUNC(varName,missionNamespace)
 
 /*
     Macro: DELETE_M_VARIABLE(varName)
@@ -278,21 +280,22 @@
 
 /*
     Macros:
-        UI_VARIABLE(typeStr,varName)
-        UI_STATIC_VARIABLE(typeStr,varName)
+        UI_VARIABLE(argType,varName)
+        UI_STATIC_VARIABLE(argType,varName)
 
     Description:
         Initializes a new ui variable member of a class. Static ui variables do not change between classes.
+        Nil for nil argument or any type.
 
     Parameters:
-        typeStr - The typeName of the argument. Reference <http://community.bistudio.com/wiki/typeName> [string].
+        argType - The typeName of the argument expected. [any].
         varName - The name of the ui variable member [string].
 
     See Also:
         <FUNCTION>
 */
-#define UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,uiNamespace)
-#define STATIC_UI_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,uiNamespace)
+#define UI_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith VAR_DFT_FUNC(varName,uiNamespace)
+#define STATIC_UI_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith SVAR_DFT_FUNC(varName,uiNamespace)
 
 /*
     Macro: DELETE_UI_VARIABLE(varName)
@@ -309,21 +312,22 @@
 
 /*
     Macros:
-        P_VARIABLE(typeStr,varName)
-        P_STATIC_VARIABLE(typeStr,varName)
+        P_VARIABLE(argType,varName)
+        P_STATIC_VARIABLE(argType,varName)
 
     Description:
         Initializes a new profile variable member of a class. Static profile variables do not change between classes.
+        Nil for nil argument or any type.
 
     Parameters:
-        typeStr - The typeName of the argument. Reference <http://community.bistudio.com/wiki/typeName> [string].
+        argType - The typeName of the argument expected. [any].
         varName - The name of the profile variable member [string].
 
     See Also:
         <FUNCTION>
 */
-#define P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith VAR_DFT_FUNC(varName,profileNamespace)
-#define STATIC_P_VARIABLE(typeStr,varName) CHECK_VAR(typeStr,varName)) exitWith SVAR_DFT_FUNC(varName,profileNamespace)
+#define P_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith VAR_DFT_FUNC(varName,profileNamespace)
+#define STATIC_P_VARIABLE(argType,varName) CHECK_VAR(argType,varName)) exitWith SVAR_DFT_FUNC(varName,profileNamespace)
 
 /*
     Macro: DELETE_P_VARIABLE(varName)
