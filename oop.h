@@ -414,7 +414,7 @@
 #define INC_VAR(varName) ADD_VAR(varName,1)
 
 /*
-    Macro: DEC_VAR(_VARvarName)
+    Macro: DEC_VAR(varName)
     Decrease variable member scalar by 1.
 
     Parameters:
