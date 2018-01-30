@@ -206,7 +206,7 @@
     Nil for nil argument or any type.
 
     Parameters:
-        argType - The type of the argument expected. [any].
+        argType - The type of the argument expected [any].
         fncName - The name of the function member [string].
 
     See Also:
@@ -224,7 +224,7 @@
         Nil for nil or any argument type.
 
     Parameters:
-        argType - The type of the argument expected. [any].
+        argType - The type of the argument expected [any].
         varName - The name of the variable member [string].
 
     See Also:
@@ -256,7 +256,7 @@
         Nil for nil argument or any type.
 
     Parameters:
-        argType - The typeName of the argument expected. [any].
+        argType - The type of the argument expected [any].
         varName - The name of the mission variable member [string].
 
     See Also:
@@ -288,7 +288,7 @@
         Nil for nil argument or any type.
 
     Parameters:
-        argType - The typeName of the argument expected. [any].
+        argType - The type of the argument expected [any].
         varName - The name of the ui variable member [string].
 
     See Also:
@@ -320,7 +320,7 @@
         Nil for nil argument or any type.
 
     Parameters:
-        argType - The typeName of the argument expected. [any].
+        argType - The type of the argument expected [any].
         varName - The name of the profile variable member [string].
 
     See Also:
